@@ -19,8 +19,9 @@ const products = productsFromServer.map((product) => {
 });
 
 export const App = () => {
-  const [productsByOwner, setProductsByOwner] = useState(products);
+  const [preparedProducts, setPreparedProducts] = useState(products);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [querry, setQuerry] = useState('');
 
   return (
     <div className="section">
@@ -37,7 +38,7 @@ export const App = () => {
                 href="#/"
                 onClick={() => {
                   setSelectedUser(null);
-                  setProductsByOwner(products);
+                  setPreparedProducts(products);
                 }}
               >
                 All
@@ -58,7 +59,7 @@ export const App = () => {
                     className={selectedUser === user ? 'is-active' : ''}
                     onClick={() => {
                       setSelectedUser(user);
-                      setProductsByOwner(
+                      setPreparedProducts(
                         products.filter(product => (
                           selectedUser.id === product.user.id
                         )),
@@ -79,7 +80,16 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={querry}
+                  onChange={(event) => {
+                    setQuerry(event.target.value);
+                    setPreparedProducts(
+                      products.filter(product => (
+                        product.name.toLowerCase()
+                          .includes(event.target.value.toLowerCase())
+                      )),
+                    );
+                  }}
                 />
 
                 <span className="icon is-left">
@@ -92,6 +102,11 @@ export const App = () => {
                     data-cy="ClearButton"
                     type="button"
                     className="delete"
+                    disabled={querry === ''}
+                    onClick={() => {
+                      setQuerry('');
+                      setPreparedProducts(products);
+                    }}
                   />
                 </span>
               </p>
@@ -212,7 +227,7 @@ export const App = () => {
             </thead>
 
             <tbody>
-              {productsByOwner.map((product) => {
+              {preparedProducts.map((product) => {
                 const {
                   id,
                   name,
